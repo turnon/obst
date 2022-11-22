@@ -35,4 +35,41 @@ module Obst
       block.call([current_time, files_in_one_day.to_a])
     end
   end
+
+  class GroupByDay
+    include Enumerable
+
+    def initialize(dir)
+      @days = Enumerator.new do |y|
+        curr = Time.now
+        one_day = 86400
+        loop do
+          y << curr.strftime('%F')
+          curr -= one_day
+        end
+      end
+
+      @log = GroupByTimeRange.new(dir) do |commited_at|
+        Time.parse(commited_at).strftime('%F')
+      end.to_enum
+    end
+
+    def each(&block)
+      day_curr = @days.next
+      log_curr, file_statuses = @log.next
+
+      loop do
+        break unless log_curr
+
+        if log_curr == day_curr
+          block.call([day_curr, file_statuses])
+          log_curr, file_statuses = @log.next
+        else
+          block.call([day_curr, []])
+        end
+
+        day_curr = @days.next
+      end
+    end
+  end
 end
