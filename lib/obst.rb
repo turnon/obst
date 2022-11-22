@@ -7,7 +7,7 @@ module Obst
     end
 
     def to_s
-      `git -C #{@dir} log --name-status --pretty=format:%ad --date='format:%Y-%m-%d %H:%M:%S' ':*.md'`
+      `git -C #{@dir} log --reverse --name-status --pretty=format:%ad --date='format:%Y-%m-%d %H:%M:%S' ':*.md'`
     end
 
     class Commit
@@ -19,7 +19,13 @@ module Obst
       # https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
       class FileStatus
         def initialize(line)
-          @line = line
+          if line =~ /^[AMD]/
+            @status, @name = line.split(/\t/)
+          elsif line =~ /^R/
+            @score, @old_name, @name = line.split(/\t/)
+            @status = 'R'
+          end
+          @name.strip! if @name
         end
       end
     end
