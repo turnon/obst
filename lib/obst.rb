@@ -1,25 +1,28 @@
 require "obst/version"
 require "obst/git_log"
+require "time"
 
 module Obst
-  class ByDay
+  class GroupByTimeRange
     include Enumerable
 
-    def initialize(dir)
+    def initialize(dir, &block)
       @commits = GitLog.new(dir).commits
+      @time_fix = block
     end
 
     def each(&block)
-      current_date = nil
+      current_time = nil
       renames = {}
       files_in_one_day = {}
 
       @commits.each do |commit|
-        current_date ||= commit.commited_date
+        commited_at = @time_fix.call(commit.commited_at)
+        current_time ||= commited_at
 
-        if current_date != commit.commited_date
-          block.call([current_date, files_in_one_day.to_a])
-          current_date = commit.commited_date
+        if current_time != commited_at
+          block.call([current_time, files_in_one_day.to_a])
+          current_time = commited_at
           files_in_one_day.clear
         end
 
@@ -30,7 +33,7 @@ module Obst
         end
       end
 
-      block.call([current_date, files_in_one_day.to_a])
+      block.call([current_time, files_in_one_day.to_a])
     end
   end
 end

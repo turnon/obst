@@ -11,10 +11,10 @@ module Obst
     class Commit
       SPACE = "\s"
 
-      attr_reader :file_statuses, :commited_date, :commited_time
+      attr_reader :file_statuses, :commited_date, :commited_at
 
       def initialize(lines)
-        @commited_date, @commited_time = lines.shift.split(SPACE)
+        @commited_at = lines.shift
         @file_statuses = lines.map{ |l| FileStatus.new(l) }
       end
 
@@ -24,14 +24,16 @@ module Obst
         AMD = /^[AMD]/
         RENAME = /^R/
 
+
         attr_reader :status, :name, :old_name
 
         def initialize(line)
           if line =~ AMD
             @status, @name = line.split(TAB)
+            @status = @status.downcase.to_sym
           elsif line =~ RENAME
             @score, @old_name, @name = line.split(TAB)
-            @status = 'R'
+            @status = :r
           end
           @name.strip! if @name
         end
