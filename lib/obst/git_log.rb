@@ -5,13 +5,17 @@ module Obst
     end
 
     def to_s
-      `git -C #{@dir} log --reverse --name-status --pretty=format:%ad --date='format:%Y-%m-%d %H:%M:%S' ':*.md'`
+      `git -C #{@dir} log --name-status --pretty=format:%ad --date='format:%Y-%m-%d %H:%M:%S'`
     end
 
     class Commit
+      SPACE = "\s"
+
+      attr_reader :file_statuses, :commited_date, :commited_time
+
       def initialize(lines)
-        @commited_at = lines.shift.strip
-        @files = lines.map{ |l| FileStatus.new(l) }
+        @commited_date, @commited_time = lines.shift.split(SPACE)
+        @file_statuses = lines.map{ |l| FileStatus.new(l) }
       end
 
       # https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
@@ -19,6 +23,8 @@ module Obst
         TAB = /\t/
         AMD = /^[AMD]/
         RENAME = /^R/
+
+        attr_reader :status, :name, :old_name
 
         def initialize(line)
           if line =~ AMD
