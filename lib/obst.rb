@@ -1,5 +1,6 @@
 require "obst/version"
-require "obst/group_by_time_range"
+require "obst/git_log"
+require "obst/group_by"
 
 module Obst
 end
