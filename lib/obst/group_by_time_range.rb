@@ -5,8 +5,8 @@ module Obst
   class GroupByTimeRange
     include Enumerable
 
-    def initialize(dir, &block)
-      @commits = GitLog.new(dir).commits
+    def initialize(**opts, &block)
+      @commits = GitLog.new(**opts).commits
       @time_fix = block
     end
 
@@ -39,7 +39,7 @@ module Obst
   class GroupByDay
     include Enumerable
 
-    def initialize(dir)
+    def initialize(**opts)
       @days = Enumerator.new do |y|
         curr = Time.now
         one_day = 86400
@@ -49,7 +49,7 @@ module Obst
         end
       end
 
-      @log = GroupByTimeRange.new(dir) do |commited_at|
+      @log = GroupByTimeRange.new(**opts) do |commited_at|
         Time.parse(commited_at).strftime('%F')
       end.to_enum
     end

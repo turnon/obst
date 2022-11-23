@@ -1,11 +1,13 @@
 module Obst
   class GitLog
-    def initialize(dir)
-      @dir = dir
+    def initialize(**opts)
+      @C = "-C #{opts[:C] || '.'}"
+      @after = opts[:after] ? "--after #{opts[:after]}" : ''
+      @before = opts[:before] ? "--before #{opts[:before]}" : ''
     end
 
     def to_s
-      `git -C #{@dir} log --name-status --pretty=format:%ad --date='format:%Y-%m-%d %H:%M:%S'`
+      `git #{@C} log --name-status #{@after} #{@before} --pretty=format:%ad --date='format:%Y-%m-%d %H:%M:%S'`
     end
 
     class Commit
