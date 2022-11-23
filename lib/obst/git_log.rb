@@ -13,10 +13,10 @@ module Obst
     class Commit
       SPACE = "\s"
 
-      attr_reader :file_statuses, :commited_date, :commited_at
+      attr_reader :file_statuses, :committed_at
 
       def initialize(lines)
-        @commited_at = lines.shift
+        @committed_at = lines.shift
         @file_statuses = lines.map{ |l| FileStatus.new(l) }
       end
 

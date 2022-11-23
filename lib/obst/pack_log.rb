@@ -28,12 +28,12 @@ module Obst
       files_in_one_day = Hash.new{ |files, name| files[name] = Statuses.new }
 
       @commits.each do |commit|
-        commited_at = @time_fix.call(commit.commited_at)
-        current_time ||= commited_at
+        committed_at = @time_fix.call(commit.committed_at)
+        current_time ||= committed_at
 
-        if current_time != commited_at
+        if current_time != committed_at
           block.call(Record.new(current_time, files_in_one_day.dup))
-          current_time = commited_at
+          current_time = committed_at
           files_in_one_day.clear
         end
 

@@ -16,8 +16,8 @@ module Obst
           end
         end
 
-        @log = PackLog.new(**opts) do |commited_at|
-          Time.parse(commited_at).strftime('%F')
+        @log = PackLog.new(**opts) do |committed_at|
+          Time.parse(committed_at).strftime('%F')
         end.to_enum
       end
 
