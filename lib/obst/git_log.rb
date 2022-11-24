@@ -1,13 +1,16 @@
+require "open3"
+
 module Obst
   class GitLog
     def initialize(**opts)
-      @C = "-C #{opts[:C] || '.'}"
-      @after = opts[:after] ? "--after #{opts[:after]}" : ''
-      @before = opts[:before] ? "--before #{opts[:before]}" : ''
+      path = opts[:C] || '.'
+      @cmd = ['git', '-C', path, 'log', '--name-status', '--pretty=format:%ad', "--date=format:'%Y-%m-%d %H:%M:%S'"]
+      @cmd << '--after' << opts[:after] if opts[:after]
+      @cmd << '--before' << opts[:before] if opts[:before]
     end
 
     def to_s
-      `git #{@C} log --name-status #{@after} #{@before} --pretty=format:%ad --date='format:%Y-%m-%d %H:%M:%S'`
+      `#{@cmd.join(' ')}`
     end
 
     class Commit
@@ -25,7 +28,6 @@ module Obst
         TAB = /\t/
         AMD = /^[AMD]/
         RENAME = /^R/
-
 
         attr_reader :status, :name, :old_name
 
@@ -47,10 +49,13 @@ module Obst
     def commits
       Enumerator.new do |y|
         batch = []
-        to_s.each_line do |line|
-          next batch << line unless line == EMPTY_LINE
-          y << Commit.new(batch)
-          batch.clear
+        Open3.popen2(*@cmd) do |stdin, stdout, status_thread|
+          stdout.each_line do |line|
+            next batch << line unless line == EMPTY_LINE
+            y << Commit.new(batch)
+            batch.clear
+          end
+          raise 'fail to loop git log' unless status_thread.value.success?
         end
         y << Commit.new(batch)
       end
