@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+require "obst"
+
+path = ARGV[0] || '.'
+
+gitignore = File.join(path, '.gitignore')
+File.open(gitignore, 'a+') do |f|
+  f.puts("# Obst\nobst.md") unless f.read =~ /# Obst/
+end
+
+buffer = []
+Obst::GroupByDays.new(C: path, days: 1).take(7).each do |record|
+  buffer << "- #{record.time} (#{record.statuses.size})"
+  record.statuses.each_key do |name|
+    buffer << "\t- [[#{name}]]"
+  end
+end
+
+obst_md = File.join(path, 'obst.md')
+File.open(obst_md, 'w') do |f|
+  f.puts(buffer.join("\n"))
+end
