@@ -4,7 +4,7 @@ module Obst
   class GitLog
     def initialize(**opts)
       path = opts[:C] || '.'
-      @cmd = ['git', '-C', path, 'log', '--name-status', '--pretty=format:%ad', "--date=format:'%Y-%m-%d %H:%M:%S'"]
+      @cmd = ['git', '-C', path, 'log', '--name-status', '--pretty=format:%ad', "--date=format:'%Y-%m-%dT%H:%M:%S'"]
       @cmd << '--after' << opts[:after] if opts[:after]
       @cmd << '--before' << opts[:before] if opts[:before]
     end
