@@ -43,5 +43,26 @@ module Obst
         end.to_enum
       end
     end
+
+    class SevenDays
+      include Enum
+
+      def initialize(**opts)
+        curr = Time.now
+        seven_days = 604800
+
+        @timeline = Enumerator.new do |y|
+          loop do
+            y << curr.strftime('%F')
+            curr -= seven_days
+          end
+        end
+
+        @log = PackLog.new(**opts) do |committed_at|
+          that_time = Time.parse(committed_at)
+          (curr - (((curr - that_time) / seven_days).to_i * seven_days)).strftime('%F')
+        end.to_enum
+      end
+    end
   end
 end
