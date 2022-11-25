@@ -22,9 +22,7 @@ module Obst
       GroupByDays.new(C: @path).take(7).each do |record|
         wday = Time.parse(record.time).strftime('%a')
         @buffer << "- #{record.time} #{wday} (#{record.statuses.size})"
-        record.statuses.each_key do |name|
-          @buffer << "\t- [[#{name}]]"
-        end
+        list_files(record)
       end
     end
 
@@ -35,9 +33,7 @@ module Obst
 
       GroupByDays.new(C: @path, before: before, days: 7).take(3).each do |record|
         @buffer << "- #{record.time} (#{record.statuses.size})"
-        record.statuses.each_key do |name|
-          @buffer << "\t- [[#{name}]]"
-        end
+        list_files(record)
       end
     end
 
@@ -48,9 +44,14 @@ module Obst
 
       GroupByDays.new(C: @path, before: before, days: 28).take(2).each do |record|
         @buffer << "- #{record.time} (#{record.statuses.size})"
-        record.statuses.each_key do |name|
-          @buffer << "\t- [[#{name}]]"
-        end
+        list_files(record)
+      end
+    end
+
+    def list_files(record)
+      record.statuses.each_pair do |name, status|
+        entry = status.final == :a ? "\t- [[#{name}]] *new !*" : "\t- [[#{name}]]"
+        @buffer << entry
       end
     end
   end

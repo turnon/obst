@@ -18,9 +18,31 @@ module Obst
       def inspect
         @arr
       end
+
+      def final
+        return :d if @arr[0] == :d
+        return :a if @arr[-1] == :a
+        :m
+      end
     end
 
-    Record = Struct.new(:time, :statuses)
+    Record = Struct.new(:time, :statuses) do
+      def status_sum
+        sum = Hash.new{ |h, k| h[k] = 0 }
+        statuses.each_value do |status|
+          sum[status.final] += 1
+        end
+        sum
+      end
+
+      def str_status_sum
+        sb = []
+        status_sum.each_pair do |st, count|
+          sb << "#{st}: #{count}"
+        end
+        sb.join(', ')
+      end
+    end
 
     def each(&block)
       current_time = nil
