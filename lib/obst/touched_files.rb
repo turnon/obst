@@ -9,9 +9,9 @@ module Obst
 
     def to_s
       last_7_days
-      @buffer << "\n"
+      @buffer << ''
       last_4_weeks_without_last_7_days
-      @buffer << "\n"
+      @buffer << ''
       last_3_months_without_last_4_weeks
       @buffer.join("\n")
     end
@@ -20,7 +20,8 @@ module Obst
       @buffer << "# Last 7 days\n"
 
       GroupByDays.new(C: @path).take(7).each do |record|
-        @buffer << "- #{record.time} (#{record.statuses.size})"
+        wday = Time.parse(record.time).strftime('%a')
+        @buffer << "- #{record.time} #{wday} (#{record.statuses.size})"
         record.statuses.each_key do |name|
           @buffer << "\t- [[#{name}]]"
         end
@@ -28,9 +29,10 @@ module Obst
     end
 
     def last_4_weeks_without_last_7_days
-      before = (Time.now - (60 * 60 * 24 * 6)).strftime('%FT00:00:00')
+      before = (Time.now - (60 * 60 * 24 * 7)).strftime('%FT23:59:59')
 
       @buffer << "# 3 weeks earlier\n"
+
       GroupByDays.new(C: @path, before: before, days: 7).take(3).each do |record|
         @buffer << "- #{record.time} (#{record.statuses.size})"
         record.statuses.each_key do |name|
@@ -40,9 +42,10 @@ module Obst
     end
 
     def last_3_months_without_last_4_weeks
-      before = (Time.now - (60 * 60 * 24 * 27)).strftime('%FT00:00:00')
+      before = (Time.now - (60 * 60 * 24 * 28)).strftime('%FT23:59:59')
 
       @buffer << "# 1 month earlier\n"
+
       GroupByDays.new(C: @path, before: before, days: 28).take(2).each do |record|
         @buffer << "- #{record.time} (#{record.statuses.size})"
         record.statuses.each_key do |name|
