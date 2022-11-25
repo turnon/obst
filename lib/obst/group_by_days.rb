@@ -8,7 +8,7 @@ module Obst
     ONE_DAY = 60 * 60 * 24
 
     def initialize(**opts)
-      duration =  ONE_DAY* (opts[:days] || 1)
+      duration = ONE_DAY * (opts[:days] || 1)
       latest = opts[:before] ? Time.parse(opts[:before]) : Time.parse(Time.now.strftime('%F 23:59:59'))
 
       @timeline = Enumerator.new do |y|
