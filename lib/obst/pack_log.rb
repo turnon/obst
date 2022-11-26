@@ -42,7 +42,17 @@ module Obst
       end
     end
 
+    # yield PackLog::Record(
+    #   time:Any,
+    #   statuses:Hash{
+    #     name1 => [:m, :a],
+    #     name2 => [:d, :m],
+    #     ...
+    #   }
+    # )
     def each(&block)
+      return self unless block
+
       current_time = nil
       renames = {}
       files_in_one_day = Hash.new{ |files, name| files[name] = Statuses.new }
