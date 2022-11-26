@@ -11,5 +11,6 @@ end
 
 obst_md = File.join(path, 'obst.md')
 File.open(obst_md, 'w') do |f|
+  f.puts Obst::Chart::DailyCount.new(C: path).to_s
   f.puts Obst::TouchedFiles.new(C: path).to_s
 end
