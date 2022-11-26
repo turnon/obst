@@ -9,7 +9,7 @@ module Obst
       @time_fix = block
     end
 
-    class Statuses
+    class Changes
       def <<(st)
         @arr ||= []
         @arr << st if @arr.last != st
@@ -28,11 +28,11 @@ module Obst
       end
     end
 
-    Record = Struct.new(:time, :statuses) do
+    Record = Struct.new(:time, :file_changes) do
       def increment
-        statuses.each_value.reduce(0) do |sum, status|
+        file_changes.each_value.reduce(0) do |sum, changes|
           sum +=
-            case status.final
+            case changes.final
             when :a
               1
             when :d
@@ -46,7 +46,7 @@ module Obst
 
     # yield PackLog::Record(
     #   time:Any,
-    #   statuses:Hash{
+    #   file_changes:Hash{
     #     name1 => [:m, :a],
     #     name2 => [:d, :m],
     #     ...
@@ -57,7 +57,7 @@ module Obst
 
       current_time = nil
       renames = {}
-      files_in_one_day = Hash.new{ |files, name| files[name] = Statuses.new }
+      files_in_one_day = Hash.new{ |files, name| files[name] = Changes.new }
 
       @commits.each do |commit|
         committed_at = @time_fix.call(commit.committed_at)

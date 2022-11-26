@@ -21,7 +21,7 @@ module Obst
 
       GroupByDays.new(C: @path).take(7).each do |record|
         wday = Time.parse(record.time).strftime('%a')
-        @buffer << "- #{record.time} #{wday} (#{record.statuses.size})"
+        @buffer << "- #{record.time} #{wday} (#{record.file_changes.count})"
         list_files(record)
       end
     end
@@ -32,7 +32,7 @@ module Obst
       @buffer << "# 3 weeks earlier\n"
 
       GroupByDays.new(C: @path, before: before, days: 7).take(3).each do |record|
-        @buffer << "- #{record.time} (#{record.statuses.size})"
+        @buffer << "- #{record.time} (#{record.file_changes.count})"
         list_files(record)
       end
     end
@@ -43,14 +43,14 @@ module Obst
       @buffer << "# 1 month earlier\n"
 
       GroupByDays.new(C: @path, before: before, days: 28).take(2).each do |record|
-        @buffer << "- #{record.time} (#{record.statuses.size})"
+        @buffer << "- #{record.time} (#{record.file_changes.count})"
         list_files(record)
       end
     end
 
     def list_files(record)
       group_by_final_status = Hash.new{ |h, k| h[k] = [] }
-      record.statuses.each_pair{ |name, status| group_by_final_status[status.final] << name }
+      record.file_changes.each_pair{ |file, status| group_by_final_status[status.final] << file }
 
       [
         [:new, :a, '#2db7b5'],
