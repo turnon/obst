@@ -54,13 +54,15 @@ module Obst
         (status.final == :a ? new_files : mod_files) << name
       end
 
-      new_files.sort!.each do |name|
-        @buffer << "\t- [[#{name}]] *new !*"
-      end
+      new_inlined = inline_files(new_files)
+      @buffer << "\t- new: #{new_inlined}" unless new_inlined.empty?
 
-      mod_files.sort!.each do |name|
-        @buffer << "\t- [[#{name}]]"
-      end
+      mod_inlined = inline_files(mod_files)
+      @buffer << "\t- mod: #{mod_inlined}" unless mod_inlined.empty?
+    end
+
+    def inline_files(files)
+      files.sort!.map{ |name| "[[#{name}]]" }.join(' / ')
     end
   end
 end
