@@ -20,8 +20,7 @@ module Obst
       @buffer << "# Last 7 days\n"
 
       GroupByDays.new(C: @path).take(7).each do |record|
-        wday = Time.parse(record.time).strftime('%a')
-        @buffer << "- #{record.time} #{wday} (#{record.file_changes.count})"
+        @buffer << "- #{record.date_wday} (#{record.file_changes.count})"
         list_files(record)
       end
     end

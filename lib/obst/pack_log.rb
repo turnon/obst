@@ -29,6 +29,10 @@ module Obst
     end
 
     Record = Struct.new(:time, :file_changes) do
+      def date_wday
+        Time.parse(time).strftime('%F %a')
+      end
+
       def increment
         file_changes.each_value.reduce(0) do |sum, changes|
           sum +=
