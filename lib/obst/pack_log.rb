@@ -20,9 +20,11 @@ module Obst
       end
 
       def final
-        return :d if @arr[0] == :d
-        return :a if @arr[-1] == :a
-        :m
+        if @arr[0] == :d
+          return @arr[-1] == :a ? nil : :d
+        end
+
+        @arr[-1] == :a ? :a : :m
       end
     end
 

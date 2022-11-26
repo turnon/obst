@@ -55,7 +55,8 @@ module Obst
       [
         [:new, :a, '#2db7b5'],
         [:mod, :m, '#d3be03'],
-        [:del, :d, '#c71585']
+        [:del, :d, '#c71585'],
+        [:nil, nil, 'grey']
       ].each do |long, short, color|
         files = group_by_final_status[short]
         next if files.empty?
