@@ -28,6 +28,8 @@ module Obst
     end
 
     def each(&block)
+      return self unless block
+
       current_time = @timeline.next
       record = @log.next
 

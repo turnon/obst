@@ -9,7 +9,7 @@ module Obst
       @time_fix = block
     end
 
-    class Statuses
+    class Changes
       def <<(st)
         @arr ||= []
         @arr << st if @arr.last != st
@@ -20,34 +20,48 @@ module Obst
       end
 
       def final
-        return :d if @arr[0] == :d
-        return :a if @arr[-1] == :a
-        :m
+        if @arr[0] == :d
+          return @arr[-1] == :a ? nil : :d
+        end
+
+        @arr[-1] == :a ? :a : :m
       end
     end
 
-    Record = Struct.new(:time, :statuses) do
-      def status_sum
-        sum = Hash.new{ |h, k| h[k] = 0 }
-        statuses.each_value do |status|
-          sum[status.final] += 1
-        end
-        sum
+    Record = Struct.new(:time, :file_changes) do
+      def date_wday
+        Time.parse(time).strftime('%F %a')
       end
 
-      def str_status_sum
-        sb = []
-        status_sum.each_pair do |st, count|
-          sb << "#{st}: #{count}"
+      def increment
+        file_changes.each_value.reduce(0) do |sum, changes|
+          sum +=
+            case changes.final
+            when :a
+              1
+            when :d
+              -1
+            else
+              0
+            end
         end
-        sb.join(', ')
       end
     end
 
+    # yield PackLog::Record(
+    #   time:Any,
+    #   file_changes:Hash{
+    #     name1 => [:m, :a],
+    #     name2 => [:d, :m],
+    #     ...
+    #   }
+    # )
     def each(&block)
+      return self unless block
+
       current_time = nil
       renames = {}
-      files_in_one_day = Hash.new{ |files, name| files[name] = Statuses.new }
+      files_in_one_day = Hash.new{ |files, name| files[name] = Changes.new }
 
       @commits.each do |commit|
         committed_at = @time_fix.call(commit.committed_at)
