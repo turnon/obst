@@ -49,9 +49,17 @@ module Obst
     end
 
     def list_files(record)
+      new_files, mod_files = [], []
       record.statuses.each_pair do |name, status|
-        entry = status.final == :a ? "\t- [[#{name}]] *new !*" : "\t- [[#{name}]]"
-        @buffer << entry
+        (status.final == :a ? new_files : mod_files) << name
+      end
+
+      new_files.sort!.each do |name|
+        @buffer << "\t- [[#{name}]] *new !*"
+      end
+
+      mod_files.sort!.each do |name|
+        @buffer << "\t- [[#{name}]]"
       end
     end
   end
