@@ -27,20 +27,18 @@ module Obst
     end
 
     Record = Struct.new(:time, :statuses) do
-      def status_sum
-        sum = Hash.new{ |h, k| h[k] = 0 }
-        statuses.each_value do |status|
-          sum[status.final] += 1
+      def increment
+        statuses.each_value.reduce(0) do |sum, status|
+          sum +=
+            case status.final
+            when :a
+              1
+            when :d
+              -1
+            else
+              0
+            end
         end
-        sum
-      end
-
-      def str_status_sum
-        sb = []
-        status_sum.each_pair do |st, count|
-          sb << "#{st}: #{count}"
-        end
-        sb.join(', ')
       end
     end
 
