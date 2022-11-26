@@ -49,10 +49,23 @@ module Obst
     end
 
     def list_files(record)
-      record.statuses.each_pair do |name, status|
-        entry = status.final == :a ? "\t- [[#{name}]] *new !*" : "\t- [[#{name}]]"
-        @buffer << entry
+      group_by_final_status = Hash.new{ |h, k| h[k] = [] }
+      record.statuses.each_pair{ |name, status| group_by_final_status[status.final] << name }
+
+      [
+        [:new, :a, '#2db7b5'],
+        [:mod, :m, '#d3be03'],
+        [:del, :d, '#c71585']
+      ].each do |long, short, color|
+        files = group_by_final_status[short]
+        next if files.empty?
+        inline_str = inline(files)
+        @buffer << "\t- <font color='#{color}'>#{long} #{files.count}:</font> #{inline_str}"
       end
+    end
+
+    def inline(files)
+      files.sort!.map{ |name| "[[#{name}]]" }.join(' / ')
     end
   end
 end
