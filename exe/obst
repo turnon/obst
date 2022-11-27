@@ -15,5 +15,7 @@ File.open(obst_md, 'w') do |f|
   f.puts "\n"
   f.puts Obst::Chart::DailyChange.new(C: path).to_s
   f.puts "\n"
+  f.puts Obst::LongTimeNoSee.new(C: path).to_s
+  f.puts "\n"
   f.puts Obst::TouchedFiles.new(C: path).to_s
 end

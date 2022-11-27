@@ -46,6 +46,28 @@ module Obst
             end
         end
       end
+
+      def group_by_final_status
+        groups = Hash.new{ |h, k| h[k] = [] }
+        file_changes.each_pair{ |file, changes| groups[changes.final] << file }
+        groups
+      end
+
+      def group_inlines(&block)
+        gbfs = group_by_final_status
+
+        [
+          [:new, :a, '#2db7b5'],
+          [:mod, :m, '#d3be03'],
+          [:del, :d, '#c71585'],
+          [:nil, nil, 'grey']
+        ].each do |long, short, color|
+          files = gbfs[short]
+          next if files.empty?
+          inline_str = files.sort!.map{ |name| "[[#{name}]]" }.join(' / ')
+          block.call("<font color='#{color}'>#{long} #{files.count}:</font> #{inline_str}")
+        end
+      end
     end
 
     # yield PackLog::Record(

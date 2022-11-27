@@ -46,24 +46,9 @@ module Obst
     end
 
     def list_files(record)
-      group_by_final_status = Hash.new{ |h, k| h[k] = [] }
-      record.file_changes.each_pair{ |file, status| group_by_final_status[status.final] << file }
-
-      [
-        [:new, :a, '#2db7b5'],
-        [:mod, :m, '#d3be03'],
-        [:del, :d, '#c71585'],
-        [:nil, nil, 'grey']
-      ].each do |long, short, color|
-        files = group_by_final_status[short]
-        next if files.empty?
-        inline_str = inline(files)
-        @buffer << "\t\t- <font color='#{color}'>#{long} #{files.count}:</font> #{inline_str}"
+      record.group_inlines do |line|
+        @buffer << "\t\t- #{line}"
       end
-    end
-
-    def inline(files)
-      files.sort!.map{ |name| "[[#{name}]]" }.join(' / ')
     end
 
     def suffix_s(i)
