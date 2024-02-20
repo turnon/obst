@@ -23,4 +23,6 @@ File.open(obst_md, 'w') do |f|
   f.puts Obst::LongTimeNoSee.new(C: path, cfg: cfg).to_s
   f.puts "\n"
   f.puts Obst::TouchedFiles.new(C: path, cfg: cfg).to_s
+  f.puts "\n"
+  f.puts Obst::TagsCount.new(C: path, cfg: cfg).to_s
 end

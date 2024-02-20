@@ -6,6 +6,7 @@ require "obst/touched_files"
 require "obst/long_time_no_see"
 require "obst/daily_gauge"
 require "obst/chart"
+require "obst/tags_count"
 
 module Obst
 end
