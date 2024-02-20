@@ -4,6 +4,12 @@ module Obst
   class TouchedFiles
     def initialize(**opts)
       @path = opts[:C]
+
+      @pathspec =
+        if cfg = opts[:cfg]
+          opts[:pathspec] ||= cfg.dig_any(['pathspec'], ['touched_files', 'pathspec'])
+        end
+
       @buffer = ["# Touch files in periods\n"]
     end
 
@@ -17,7 +23,7 @@ module Obst
     def last_7_days
       @buffer << "- Last 7 days"
 
-      GroupByDays.new(C: @path).take(7).each do |record|
+      GroupByDays.new(C: @path, pathspec: @pathspec).take(7).each do |record|
         @buffer << "\t- #{record.date_wday} (#{record.file_changes.count})"
         list_files(record)
       end
@@ -28,7 +34,7 @@ module Obst
 
       @buffer << "- 1 week ago"
 
-      GroupByDays.new(C: @path, before: before, days: 7).take(3).each_with_index do |record, i|
+      GroupByDays.new(C: @path, before: before, days: 7, pathspec: @pathspec).take(3).each_with_index do |record, i|
         @buffer << "\t- #{record.time} is #{1+i}.week#{suffix_s(i)}.ago (#{record.file_changes.count})"
         list_files(record)
       end
@@ -39,7 +45,7 @@ module Obst
 
       @buffer << "- 1 month ago"
 
-      GroupByDays.new(C: @path, before: before, days: 28).take(2).each_with_index do |record, i|
+      GroupByDays.new(C: @path, before: before, days: 28, pathspec: @pathspec).take(2).each_with_index do |record, i|
         @buffer << "\t- #{record.time} is #{1+i}.month#{suffix_s(i)}.ago (#{record.file_changes.count})"
         list_files(record)
       end

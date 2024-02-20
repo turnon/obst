@@ -2,7 +2,8 @@ module Obst
   class Chart
     class DailyCount
       def initialize(**opts)
-        @daily_gauge = Obst::DailyGauge.new(C: opts[:C]).lazy
+        pathspec = opts[:cfg]&.dig_any(['pathspec'], ['chart_daily_count', 'pathspec'])
+        @daily_gauge = Obst::DailyGauge.new(C: opts[:C], pathspec: pathspec).lazy
       end
 
       def to_s
@@ -30,7 +31,8 @@ module Obst
 
     class DailyChange
       def initialize(**opts)
-        @daily = Obst::GroupByDays.new(C: opts[:C]).lazy
+        pathspec = opts[:cfg]&.dig_any(['pathspec'], ['chart_daily_change', 'pathspec'])
+        @daily = Obst::GroupByDays.new(C: opts[:C], pathspec: pathspec).lazy
       end
 
       def to_s

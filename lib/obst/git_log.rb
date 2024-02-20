@@ -7,6 +7,7 @@ module Obst
       @cmd = ['git', '-C', path, 'log', '--name-status', '--pretty=format:%ad', "--date=format:'%Y-%m-%dT%H:%M:%S'"]
       @cmd << '--after' << opts[:after] if opts[:after]
       @cmd << '--before' << opts[:before] if opts[:before]
+      Array(opts[:pathspec]).each{ |s| @cmd << s }
     end
 
     def to_s
@@ -58,6 +59,9 @@ module Obst
           raise 'fail to loop git log' unless status_thread.value.success?
         end
         y << Commit.new(batch)
+      rescue => e
+        puts @cmd
+        raise e
       end
     end
   end

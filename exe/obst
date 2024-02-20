@@ -4,18 +4,23 @@ require "obst"
 
 path = ARGV[0] || '.'
 
+# setup .gitignore
 gitignore = File.join(path, '.gitignore')
 File.open(gitignore, 'a+') do |f|
   f.puts("# Obst\nobst.md") unless f.read =~ /# Obst/
 end
 
+# read config
+cfg = Obst::Config.new(path)
+
+# print stats
 obst_md = File.join(path, 'obst.md')
 File.open(obst_md, 'w') do |f|
   f.puts Obst::Chart::DailyCount.new(C: path).to_s
   f.puts "\n"
-  f.puts Obst::Chart::DailyChange.new(C: path).to_s
+  f.puts Obst::Chart::DailyChange.new(C: path, cfg: cfg).to_s
   f.puts "\n"
-  f.puts Obst::LongTimeNoSee.new(C: path).to_s
+  f.puts Obst::LongTimeNoSee.new(C: path, cfg: cfg).to_s
   f.puts "\n"
-  f.puts Obst::TouchedFiles.new(C: path).to_s
+  f.puts Obst::TouchedFiles.new(C: path, cfg: cfg).to_s
 end

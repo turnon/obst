@@ -4,6 +4,9 @@ module Obst
   class LongTimeNoSee
     def initialize(**opts)
       opts = opts.merge(days: 7)
+      if cfg = opts[:cfg]
+        opts[:pathspec] ||= cfg.dig('long_time_no_see', 'pathspec')
+      end
       @weekly = LastSeen.new(**opts)
     end
 

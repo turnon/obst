@@ -38,6 +38,21 @@ Group by Days
 Obst::GroupByDays.new(C: '/path/to/local/git/repo', after: '2022-10-20T00:00:00', days: 7)
 ```
 
+## Config
+
+Place .obst.json under dir where you run obst. Content for example:
+
+```json
+{
+  // for all stats
+  "pathspec": [":!.obsidian", ":!calendar"],
+  // for specific stats
+  "long_time_no_see": {
+    "pathspec": [":!.obsidian", ":!calendar"]
+  }
+}
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
