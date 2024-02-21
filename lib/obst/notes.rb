@@ -34,9 +34,5 @@ module Obst
     def each(&block)
       @notes.each(&block)
     end
-
-    def tags
-      @gitlog.map(&:tags).flatten.tally.sort{ |t1, t2| [t2[1], t2[0]] <=> [t1[1], t1[0]] }.to_h
-    end
   end
 end
