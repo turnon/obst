@@ -62,7 +62,7 @@ module Obst
           [:del, :d, '#c71585'],
           [:nil, nil, 'grey']
         ].each do |long, short, color|
-          files = gbfs[short]
+          files = gbfs[short].compact
           next if files.empty?
           inline_str = files.sort!.map{ |name| "[[#{name}]]" }.join(' / ')
           block.call("<font color='#{color}'>#{long} #{files.count}:</font> #{inline_str}")
